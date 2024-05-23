@@ -90,7 +90,7 @@ function App() {
           <Button 
           onClick={() => setDetectFlag(true)}
           disabled={!(cameraOK && setCameraOK)}
-          >姿勢検出
+          >姿勢検出!!!!
           </Button>
         </div>
       </Container>
