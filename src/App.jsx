@@ -75,11 +75,13 @@ function App() {
           style={{
             width: "100%",
             maxWidth: "800px",
+           //visibility: "hidden"
           }}
           audio={false}
           ref={webcam}
           videoConstraints={{
-            facingMode: {exact: "environment"},
+            facingMode: "user",
+            //facingMode: {exact: "environment"},
           }}
           onUserMedia={() => setCameraOK(true)}
         />
