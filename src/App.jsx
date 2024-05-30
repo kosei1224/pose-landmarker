@@ -63,6 +63,8 @@ function App() {
       canvasRef.current.width = webcam.current.video.clientWidth;
       canvasRef.current.height = webcam.current.video.clientHeight;
       ctxRef.current = canvasRef.current.getContext("2d");
+      ctxRef.current.fillStyle = "black";
+      ctxRef.current.fillRect(0, 0, canvas.width, canvas.height);
       drawingUtils.current = new DrawingUtils(ctxRef.current);
       loop();
     }
@@ -75,7 +77,7 @@ function App() {
           style={{
             width: "100%",
             maxWidth: "800px",
-           visibility: "hidden"
+            visibility: "hidden"
           }}
           audio={false}
           ref={webcam}
@@ -85,7 +87,7 @@ function App() {
           }}
           onUserMedia={() => setCameraOK(true)}
         />
-        <canvas className="position-absolute top-0 start-0" ref={canvasRef} />
+        <canvas className="position-absolute top-0 start-0" ref={canvasRef}/>
       </div>
       <Container fluid>
         <div>
