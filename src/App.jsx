@@ -18,6 +18,7 @@ function App() {
   const ctxRef = useRef();
   const [cameraOK, setCameraOK] = useState(false);
   const [settingOK, setSettingOK] = useState(false);
+  //const [clickOK, setClickOK] = useState(false);
   
   useEffect(() => {
     const createPoseLandmarker = async () => {
@@ -44,6 +45,8 @@ function App() {
       webcam.current.video,
       startTime,
       (result) => {
+        ctxRef.current.fillStyle = "black";
+        ctxRef.current.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         for (const landmark of result.landmarks) {
           drawingUtils.current.drawLandmarks(landmark, {
             radius: (data) => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1),
@@ -53,6 +56,7 @@ function App() {
             PoseLandmarker.POSE_CONNECTIONS
           );
         }
+
       }
     );
     requestAnimationFrame(loop);
@@ -63,12 +67,11 @@ function App() {
       canvasRef.current.width = webcam.current.video.clientWidth;
       canvasRef.current.height = webcam.current.video.clientHeight;
       ctxRef.current = canvasRef.current.getContext("2d");
-      ctxRef.current.fillStyle = "black";
-      ctxRef.current.fillRect(0, 0, canvas.width, canvas.height);
       drawingUtils.current = new DrawingUtils(ctxRef.current);
       loop();
     }
   }, [detectFlag]);
+
 
   return (
     <div>
@@ -77,7 +80,7 @@ function App() {
           style={{
             width: "100%",
             maxWidth: "800px",
-            visibility: "hidden"
+            //visibility: "hidden"
           }}
           audio={false}
           ref={webcam}
@@ -85,15 +88,21 @@ function App() {
             //facingMode: "user",
             facingMode: {exact: "environment"},
           }}
-          onUserMedia={() => setCameraOK(true)}
+          onUserMedia={() => {
+            setCameraOK(true)
+          }}
         />
-        <canvas className="position-absolute top-0 start-0" ref={canvasRef}/>
+        <canvas
+          className="position-absolute top-0 start-0"
+          ref={canvasRef}
+
+          />
       </div>
-      <Container fluid>
+      <Container fluid hidden={detectFlag}>
         <div>
           <Button 
           onClick={() => setDetectFlag(true)}
-          disabled={!(cameraOK && setCameraOK)}
+          disabled={!(cameraOK && settingOK)}
           >姿勢検出!!!!
           </Button>
         </div>
