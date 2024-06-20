@@ -227,11 +227,9 @@ return (
     <div className="App">
 
     <h2>Graph 1</h2>
-    <Graph1 ydata={con}/>
-
-    </div>
-
-    <div>
+    <div style={{
+      maxWidth: "500px"
+    }}>
     <InputGroup>
     <InputGroup.Text>骨格点</InputGroup.Text>
     <Form.Select aria-label="Default select example">
@@ -239,7 +237,16 @@ return (
       <option value="hidarihiji">左肘</option>
       <option value="migihiji">右肘</option>
     </Form.Select>
+    <Form.Select aria-label="Default select example">
+      <option>骨格点の選択</option>
+      <option value="hidarihiji">左肘</option>
+      <option value="migihiji">右肘</option>
+    </Form.Select>
     </InputGroup>
+    </div>
+
+    <Graph1 ydata={con}/>
+
     </div>
   </div>
 );
