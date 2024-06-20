@@ -73,7 +73,7 @@ useEffect(() => {
 
 
 // 取得したい骨格点のインデックスを配列で指定
-const targetLandmarkIndices = [13]; // 例：鼻、左肩、左腰のインデックス
+const targetLandmarkIndices = [13,14]; // 例：鼻、左肩、左腰のインデックス
 const windowSize = 5; // 移動平均を計算するためのウィンドウサイズ
 
 
@@ -180,14 +180,13 @@ useEffect(() => {
 
 
 
-
 return (
   <div>
     <div className="position-relative">
       <Webcam
         style={{
           width: "100%",
-          maxWidth: "800px",
+          maxWidth: "500px",
           //visibility: "hidden"
         }}
         audio={false}
@@ -217,6 +216,10 @@ return (
       </div>
     </Container>
     <div className="App">
+
+    <h2>Graph 2</h2>
+    <Graph2 ydata={con}/>
+    
       <h2>Graph 2</h2>
       <Graph2 ydata={con}/>
     </div>
