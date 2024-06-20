@@ -21,7 +21,7 @@ import {
     Legend
   );
   
-  export default function Graph2({ydata = []}) {
+  export default function Graph1({ydata = []}) {
     const graphData = {
       labels: new Array(ydata.length).fill(0).map((x,idx) => idx),
       yData: ydata,
@@ -45,14 +45,14 @@ import {
       labels: graphData.labels,
       datasets: [
         {
-          label: 'Dataset 1',
-          data: graphData.yData,
+          label: '左肘',
+          data: graphData.yData.map(d =>d.hidarihiji.y),
           borderColor: 'rgb(255, 99, 132)',
           backgroundColor: 'rgba(255, 99, 132, 0.5)',
         },
         {
-          label: 'Dataset 2',
-          data: graphData.yData,
+          label: '右肘',
+          data: graphData.yData.map(e =>e.migihiji.y),
           borderColor: 'rgb(0, 0, 255)',
           backgroundColor: 'rgba(255, 99, 132, 0.5)',
         },

@@ -34,6 +34,8 @@ FilesetResolver,
 DrawingUtils,
 } from "@mediapipe/tasks-vision";
 import Graph1 from './Graph1';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
 
 
 function App() {
@@ -73,7 +75,10 @@ useEffect(() => {
 
 
 // 取得したい骨格点のインデックスを配列で指定
-const targetLandmarkIndices = [13,14]; // 例：鼻、左肩、左腰のインデックス
+const targetLandmarkIndices = [
+  {index: 13, name: "hidarihiji"},
+  {index: 14, name: "migihiji"}
+]; // 例：鼻、左肩、左腰のインデックス
 const windowSize = 5; // 移動平均を計算するためのウィンドウサイズ
 
 
@@ -116,9 +121,10 @@ poseLandmarker.current.detectForVideo(
     // if文でresult.landmarksが存在し、かつ空でないことを確認
     if (result.landmarks && result.landmarks.length > 0) {
       for (const landmarks of result.landmarks) {
+        const kokaku = {}
         // 指定した骨格点の座標を処理
         targetLandmarkIndices.forEach((index, i) => {
-          const point = landmarks[index];
+          const point = landmarks[index.index];
           if (point) {
             // 新しい座標を追加
             pastCoordinates[i].push(point);
@@ -134,10 +140,12 @@ poseLandmarker.current.detectForVideo(
 
             // 移動平均の相対座標をコンソールに出力
             //console.log(`Landmark ${index} Moving Average (Relative): (x: ${movingAverage.x}, y: ${movingAverage.y}, z: ${movingAverage.z})`);
-            if(count%6==0){
+            /*if(count%6==0){
+            console.log(movingAverage.y);
             setCon((c) => [...c,movingAverage.y])
             }
-            count++;
+            count++;*/
+            kokaku[index.name] = movingAverage;
 
 
             // 必要に応じて絶対座標に変換してコンソールに出力
@@ -146,6 +154,11 @@ poseLandmarker.current.detectForVideo(
             //console.log(`Landmark ${index} Moving Average (Absolute): (x: ${absoluteX}, y: ${absoluteY}, z: ${movingAverage.z})`);
           }
         });
+        if(count%6==0){
+          console.log(kokaku);
+          setCon((c) => [...c,kokaku])
+          }
+          count++;
 
 
         // ランドマークを描画
@@ -162,10 +175,6 @@ poseLandmarker.current.detectForVideo(
 );
 requestAnimationFrame(loop);
 }
-
-
-
-
 
 
 useEffect(() => {
@@ -220,6 +229,17 @@ return (
     <h2>Graph 1</h2>
     <Graph1 ydata={con}/>
 
+    </div>
+
+    <div>
+    <InputGroup>
+    <InputGroup.Text>骨格点</InputGroup.Text>
+    <Form.Select aria-label="Default select example">
+      <option>骨格点の選択</option>
+      <option value="hidarihiji">左肘</option>
+      <option value="migihiji">右肘</option>
+    </Form.Select>
+    </InputGroup>
     </div>
   </div>
 );
