@@ -50,6 +50,12 @@ import {
           borderColor: 'rgb(255, 99, 132)',
           backgroundColor: 'rgba(255, 99, 132, 0.5)',
         },
+        {
+          label: 'Dataset 2',
+          data: graphData.yData,
+          borderColor: 'rgb(0, 0, 255)',
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        },
       ],
     };
   
