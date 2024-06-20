@@ -33,7 +33,7 @@ PoseLandmarker,
 FilesetResolver,
 DrawingUtils,
 } from "@mediapipe/tasks-vision";
-import Graph2 from './Graph2';
+import Graph1 from './Graph1';
 
 
 function App() {
@@ -217,11 +217,9 @@ return (
     </Container>
     <div className="App">
 
-    <h2>Graph 2</h2>
-    <Graph2 ydata={con}/>
-    
-      <h2>Graph 2</h2>
-      <Graph2 ydata={con}/>
+    <h2>Graph 1</h2>
+    <Graph1 ydata={con}/>
+
     </div>
   </div>
 );
