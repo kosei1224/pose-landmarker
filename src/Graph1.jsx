@@ -9,7 +9,8 @@ import {
     Legend,
   } from 'chart.js';
   import { Line } from 'react-chartjs-2';
-  import { useState } from 'react';
+  import { useEffect, useState } from 'react';
+
   
   ChartJS.register(
     CategoryScale,
@@ -21,17 +22,18 @@ import {
     Legend
   );
   
-  export default function Graph1({ydata = []}) {
+  export default function Graph1({ydata = [],hyou=["",""]}) {
     const graphData = {
       labels: new Array(ydata.length).fill(0).map((x,idx) => idx),
       yData: ydata,
     };
-    console.log(graphData)
+    //console.log(graphData)
     const options = {
       animation: false,
       responsive: true,
       plugins: {
         legend: {
+          display: false,
           position: 'top'
         },
         title: {
@@ -40,23 +42,131 @@ import {
         },
       },
     };
-  
+    const [graph, setGraph] = useState({
+      hidarikata: {
+        name:'左肩',
+        bui: 'hidarikata',
+        borderColor: 'rgb(0, 255, 255)',
+        hidden: true,
+      },
+      migikata : {
+        name:'右肩',
+        bui: 'migikata',
+        borderColor: 'rgb(255, 255, 255)',
+        hidden: true,
+      }
+    });
+
+
+    useEffect(() =>{
+      setGraph((j)=>{
+        const jj = JSON.parse(JSON.stringify(j));// j copy
+        if (hyou[0] !== "") {
+          jj[hyou[0]].hidden = false;
+        }
+        if(hyou[1] !==""){
+        jj[hyou[1]].hidden = false;
+        }
+        return jj;
+      })
+    },[hyou])
+
     const data = {
       labels: graphData.labels,
-      datasets: [
-        {
-          label: '左肘',
-          data: graphData.yData.map(d =>d.hidarihiji.y),
-          borderColor: 'rgb(255, 99, 132)',
+      datasets: Object.values(graph).map(youso => {
+        return {label: youso.name,
+          data: graphData.yData.map(a =>a[youso.bui].y),
+          borderColor: youso.borderColor,
           backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        },
-        {
-          label: '右肘',
-          data: graphData.yData.map(e =>e.migihiji.y),
-          borderColor: 'rgb(0, 0, 255)',
-          backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        },
-      ],
+          hidden: youso.hidden,
+        }
+      })
+
+      //   {
+      //     label: '左肩',
+      //     data: graphData.yData.map(a =>a.hidarikata.y),
+      //     borderColor: 'rgb(0, 255, 255)',
+      //     backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      //     hidden: false,
+      //   },
+      //   {
+      //     label: '右肩',
+      //     data: graphData.yData.map(b =>b.migikata.y),
+      //     borderColor: 'rgb(255,255,255)',
+      //     backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      //     hidden: true,
+      //   },
+      //   {
+      //     label: '左肘',
+      //     data: graphData.yData.map(c =>c.hidarihiji.y),
+      //     borderColor: 'rgb(255, 99, 132)',
+      //     backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      //     hidden: true,
+      //   },
+      //   {
+      //     label: '右肘',
+      //     data: graphData.yData.map(d =>d.migihiji.y),
+      //     borderColor: 'rgb(0, 0, 255)',
+      //     backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      //     hidden: true,
+      //   },
+      //   {
+      //     label: '左手首',
+      //     data: graphData.yData.map(e =>e.hidaritekubi.y),
+      //     borderColor: 'rgb(0, 255, 0)',
+      //     backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      //     hidden: true,
+      //   },
+      //   {
+      //     label: '右手首',
+      //     data: graphData.yData.map(f =>f.migitekubi.y),
+      //     borderColor: 'rgb(255, 255, 0)',
+      //     backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      //     hidden: true,
+      //   },
+      //   {
+      //     label: '左腰',
+      //     data: graphData.yData.map(g =>g.hidarikosi.y),
+      //     borderColor: 'rgb(255, 192, 203)',
+      //     backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      //     hidden: true,
+      //   },
+      //   {
+      //     label: '右腰',
+      //     data: graphData.yData.map(h =>h.migikosi.y),
+      //     borderColor: 'rgb(255, 165, 0)',
+      //     backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      //     hidden: true,
+      //   },
+      //   {
+      //     label: '左膝',
+      //     data: graphData.yData.map(i =>i.hidarihiza.y),
+      //     borderColor: 'rgb(128,0,0)',
+      //     backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      //     hidden: true,
+      //   },
+      //   {
+      //     label: '右膝',
+      //     data: graphData.yData.map(j =>j.migihiza.y),
+      //     borderColor: 'rgb(148,0,211)',
+      //     backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      //     hidden: true,
+      //   },
+      //   {
+      //     label: '左つま先',
+      //     data: graphData.yData.map(k =>k.hidaritumasaki.y),
+      //     borderColor: 'rgb(102,204,255)',
+      //     backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      //     hidden: true,
+      //   },
+      //   {
+      //     label: '右つま先',
+      //     data: graphData.yData.map(l =>l.migitumasaki.y),
+      //     borderColor: 'rgb(204,255,102)',
+      //     backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      //     hidden: true,
+      //   },
+      // ],
     };
   
     return (

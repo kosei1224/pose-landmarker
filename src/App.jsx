@@ -48,6 +48,7 @@ const ctxRef = useRef();
 const [cameraOK, setCameraOK] = useState(false);
 const [settingOK, setSettingOK] = useState(false);
 const [con,setCon] = useState([]);
+const [hyou,setHyou] = useState(["", ""]);
 //const [clickOK, setClickOK] = useState(false);
 let count = 0;
 
@@ -75,15 +76,25 @@ useEffect(() => {
 
 
 // 取得したい骨格点のインデックスを配列で指定
-const targetLandmarkIndices = [
+const targetLandmarkIndex = [
+  {index: 11, name: "hidarikata"},
+  {index: 12, name: "migikata"},
   {index: 13, name: "hidarihiji"},
-  {index: 14, name: "migihiji"}
+  {index: 14, name: "migihiji"},
+  {index: 15, name: "hidaritekubi"},
+  {index: 16, name: "migitekubi"},
+  {index: 23, name: "hidarikosi"},
+  {index: 24, name: "migikosi"},
+  {index: 25, name: "hidarihiza"},
+  {index: 26, name: "migihiza"},
+  {index: 31, name: "hidaritumasaki"},
+  {index: 32, name: "migitumasaki"}
 ]; // 例：鼻、左肩、左腰のインデックス
 const windowSize = 5; // 移動平均を計算するためのウィンドウサイズ
 
 
 // 過去の座標データを保持するための配列
-const pastCoordinates = targetLandmarkIndices.map(() => []);
+const pastCoordinates = targetLandmarkIndex.map(() => []);
 
 
 function calculateMovingAverage(coords) {
@@ -123,7 +134,7 @@ poseLandmarker.current.detectForVideo(
       for (const landmarks of result.landmarks) {
         const kokaku = {}
         // 指定した骨格点の座標を処理
-        targetLandmarkIndices.forEach((index, i) => {
+        targetLandmarkIndex.forEach((index, i) => {
           const point = landmarks[index.index];
           if (point) {
             // 新しい座標を追加
@@ -232,20 +243,61 @@ return (
     }}>
     <InputGroup>
     <InputGroup.Text>骨格点</InputGroup.Text>
-    <Form.Select aria-label="Default select example">
-      <option>骨格点の選択</option>
-      <option value="hidarihiji">左肘</option>
-      <option value="migihiji">右肘</option>
+    <Form.Select aria-label="Default select example"
+      onChange={(e) => {
+        setHyou(h => [e.target.value, h[1]]);
+      }}
+    >
+      <option value={""}>骨格点の選択</option>
+      {
+        [
+          {name: "左肩", id: "hidarikata",},
+          {name: "右肩", id: "migikata"},
+          {name: "左肘", id: "hidarihiji"},
+          {name: "右肘", id: "migihiji"},
+          {name: "左手首", id: "hidaritekubi"},
+          {name: "右手首", id: "migitekubi"},
+          {name: "左腰", id: "hidarikosi"},
+          {name: "右腰", id: "migikosi"},
+          {name: "左膝", id: "hidarihiza"},
+          {name: "右膝", id: "migihiza"},
+          {name: "左つま先", id: "hidaritumasaki"},
+          {name: "右つま先", id: "migitumasaki"},
+        ].map(s => (
+          <option key={`hidari-${s.id}`} value={s.id} disabled={hyou[1]===s.id}>{s.name}</option>
+        ))
+      }
+
     </Form.Select>
-    <Form.Select aria-label="Default select example">
-      <option>骨格点の選択</option>
-      <option value="hidarihiji">左肘</option>
-      <option value="migihiji">右肘</option>
+    <Form.Select aria-label="Default select example"
+          onChange={(e) => {
+            setHyou(h => [h[0], e.target.value]);
+          }}
+    >
+    <option value={""}>骨格点の選択</option>
+    {
+        [
+          {name: "左肩", id: "hidarikata",},
+          {name: "右肩", id: "migikata"},
+          {name: "左肘", id: "hidarihiji"},
+          {name: "右肘", id: "migihiji"},
+          {name: "左手首", id: "hidaritekubi"},
+          {name: "右手首", id: "migitekubi"},
+          {name: "左腰", id: "hidarikosi"},
+          {name: "右腰", id: "migikosi"},
+          {name: "左膝", id: "hidarihiza"},
+          {name: "右膝", id: "migihiza"},
+          {name: "左つま先", id: "hidaritumasaki"},
+          {name: "右つま先", id: "migitumasaki"},
+        ].map(s => (
+          <option key={`migi-${s.id}`} value={s.id} disabled={hyou[0]===s.id}>{s.name}</option>
+        ))
+      }
     </Form.Select>
     </InputGroup>
     </div>
 
-    <Graph1 ydata={con}/>
+    <Graph1 ydata={con} hyou={hyou}/>
 
     </div>
   </div>
