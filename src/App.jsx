@@ -19,7 +19,7 @@ function App() {
   const [settingOK, setSettingOK] = useState(false);
   const [con, setCon] = useState([]);
   const [hyou, setHyou] = useState(["", ""]);
-  const [buttonOK, setButtonOK] = useState(true);
+  //const [buttonOK, setButtonOK] = useState(true);
   let count = 0;
 
   useEffect(() => {
