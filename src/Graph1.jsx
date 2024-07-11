@@ -54,10 +54,69 @@ import {
         bui: 'migikata',
         borderColor: 'rgb(255, 255, 255)',
         hidden: true,
+      },
+      hidarihiji : {
+        name:'左肘',
+        bui: 'hidarihiji',
+        borderColor: 'rgb(255, 99, 132)',
+        hidden: true,
+      },
+      migihiji : {
+        name:'右肘',
+        bui: 'migihiji',
+        borderColor: 'rgb(0, 0, 255)',
+        hidden: true,
+      },
+      hidaritekubi : {
+        name:'左手首',
+        bui: 'hidaritekubi',
+        borderColor: 'rgb(0, 255, 0)',
+        hidden: true,
+      },
+      migitekubi : {
+        name:'右手首',
+        bui: 'migitekubi',
+        borderColor: 'rgb(255, 255, 0)',
+        hidden: true,
+      },
+      hidarikosi : {
+        name:'左腰',
+        bui: 'hidarikosi',
+        borderColor: 'rgb(255, 192, 203)',
+        hidden: true,
+      },
+      migikosi : {
+        name:'右腰',
+        bui: 'migikosi',
+        borderColor: 'rgb(255, 165, 0)',
+        hidden: true,
+      },
+      hidarihiza : {
+        name:'左膝',
+        bui: 'hidarihiza',
+        borderColor: 'rgb(128,0,0)',
+        hidden: true,
+      },
+      migihiza : {
+        name:'右膝',
+        bui: 'migihiza',
+        borderColor: 'rgb(148,0,215)',
+        hidden: true,
+      },
+      hidaritumasaki : {
+        name:'左つま先',
+        bui: 'hidaritumasaki',
+        borderColor: 'rgb(102,204,255)',
+        hidden: true,
+      },
+      migitumasaki : {
+        name:'右つま先',
+        bui: 'migitumasaki',
+        borderColor: 'rgb(204,255,102)',
+        hidden: true,
       }
     });
-
-
+    
     useEffect(() =>{
       setGraph((j)=>{
         const jj = JSON.parse(JSON.stringify(j));// j copy
