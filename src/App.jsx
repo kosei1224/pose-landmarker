@@ -140,7 +140,8 @@ function App() {
           audio={false}
           ref={webcam}
           videoConstraints={{
-            facingMode: "user",
+            //facingMode: "user",
+            facingMode: "environment"
           }}
           onUserMedia={() => {
             setCameraOK(true);
