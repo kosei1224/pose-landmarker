@@ -1,12 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import "./App.scss";
 import Webcam from "react-webcam";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
-import { PoseLandmarker, FilesetResolver, DrawingUtils } from "@mediapipe/tasks-vision";
-import Graph1 from './Graph1';
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
+import {
+  PoseLandmarker,
+  FilesetResolver,
+  DrawingUtils,
+} from "@mediapipe/tasks-vision";
+import Graph1 from "./Graph1";
 
 function App() {
   const webcam = useRef();
@@ -52,18 +56,21 @@ function App() {
     { index: 25, name: "hidarihiza" },
     { index: 26, name: "migihiza" },
     { index: 31, name: "hidaritumasaki" },
-    { index: 32, name: "migitumasaki" }
+    { index: 32, name: "migitumasaki" },
   ];
   const windowSize = 5;
   const pastCoordinates = targetLandmarkIndex.map(() => []);
 
   function calculateMovingAverage(coords) {
-    const sum = coords.reduce((acc, coord) => {
-      acc.x += coord.x;
-      acc.y += coord.y;
-      acc.z += coord.z;
-      return acc;
-    }, { x: 0, y: 0, z: 0 });
+    const sum = coords.reduce(
+      (acc, coord) => {
+        acc.x += coord.x;
+        acc.y += coord.y;
+        acc.z += coord.z;
+        return acc;
+      },
+      { x: 0, y: 0, z: 0 }
+    );
     const count = coords.length;
     return {
       x: sum.x / count,
@@ -73,20 +80,30 @@ function App() {
   }
 
   function loop() {
-    ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    ctxRef.current.clearRect(
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
     let startTime = performance.now();
     poseLandmarker.current.detectForVideo(
       webcam.current.video,
       startTime,
       (result) => {
         ctxRef.current.fillStyle = "black";
-        ctxRef.current.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        ctxRef.current.fillRect(
+          0,
+          0,
+          canvasRef.current.width,
+          canvasRef.current.height
+        );
         const canvasWidth = canvasRef.current.width;
         const canvasHeight = canvasRef.current.height;
 
         if (result.landmarks && result.landmarks.length > 0) {
           for (const landmarks of result.landmarks) {
-            const kokaku = {}
+            const kokaku = {};
             targetLandmarkIndex.forEach((index, i) => {
               const point = landmarks[index.index];
               if (point) {
@@ -94,7 +111,9 @@ function App() {
                 if (pastCoordinates[i].length > windowSize) {
                   pastCoordinates[i].shift();
                 }
-                const movingAverage = calculateMovingAverage(pastCoordinates[i]);
+                const movingAverage = calculateMovingAverage(
+                  pastCoordinates[i]
+                );
                 kokaku[index.name] = movingAverage;
                 const absoluteX = movingAverage.x * canvasWidth;
                 const absoluteY = movingAverage.y * canvasHeight;
@@ -106,7 +125,8 @@ function App() {
             }
             count++;
             drawingUtils.current.drawLandmarks(landmarks, {
-              radius: (data) => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1),
+              radius: (data) =>
+                DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1),
             });
             drawingUtils.current.drawConnectors(
               landmarks,
@@ -117,6 +137,10 @@ function App() {
       }
     );
     requestAnimationFrame(loop);
+  }
+
+  function zeroume(z) {
+    return ("0" + z).slice(-2);
   }
 
   useEffect(() => {
@@ -140,17 +164,14 @@ function App() {
           audio={false}
           ref={webcam}
           videoConstraints={{
-            //facingMode: "user",
-            facingMode: "environment"
+            facingMode: "user",
+            //facingMode: "environment"
           }}
           onUserMedia={() => {
             setCameraOK(true);
           }}
         />
-        <canvas
-          className="position-absolute top-0 start-0"
-          ref={canvasRef}
-        />
+        <canvas className="position-absolute top-0 start-0" ref={canvasRef} />
       </div>
       <Container fluid hidden={detectFlag}>
         <div>
@@ -169,9 +190,10 @@ function App() {
             <div style={{ maxWidth: "500px" }}>
               <InputGroup>
                 <InputGroup.Text>骨格点</InputGroup.Text>
-                <Form.Select aria-label="Default select example"
+                <Form.Select
+                  aria-label="Default select example"
                   onChange={(e) => {
-                    setHyou(h => [e.target.value, h[1]]);
+                    setHyou((h) => [e.target.value, h[1]]);
                   }}
                 >
                   <option value={""}>骨格点の選択</option>
@@ -188,13 +210,20 @@ function App() {
                     { name: "右膝", id: "migihiza" },
                     { name: "左つま先", id: "hidaritumasaki" },
                     { name: "右つま先", id: "migitumasaki" },
-                  ].map(s => (
-                    <option key={`hidari-${s.id}`} value={s.id} disabled={hyou[1] === s.id}>{s.name}</option>
+                  ].map((s) => (
+                    <option
+                      key={`hidari-${s.id}`}
+                      value={s.id}
+                      disabled={hyou[1] === s.id}
+                    >
+                      {s.name}
+                    </option>
                   ))}
                 </Form.Select>
-                <Form.Select aria-label="Default select example"
+                <Form.Select
+                  aria-label="Default select example"
                   onChange={(e) => {
-                    setHyou(h => [h[0], e.target.value]);
+                    setHyou((h) => [h[0], e.target.value]);
                   }}
                 >
                   <option value={""}>骨格点の選択</option>
@@ -211,10 +240,42 @@ function App() {
                     { name: "右膝", id: "migihiza" },
                     { name: "左つま先", id: "hidaritumasaki" },
                     { name: "右つま先", id: "migitumasaki" },
-                  ].map(s => (
-                    <option key={`migi-${s.id}`} value={s.id} disabled={hyou[0] === s.id}>{s.name}</option>
+                  ].map((s) => (
+                    <option
+                      key={`migi-${s.id}`}
+                      value={s.id}
+                      disabled={hyou[0] === s.id}
+                    >
+                      {s.name}
+                    </option>
                   ))}
                 </Form.Select>
+                <Button
+                variant="success"
+                onClick={() => {
+                  const hizuke = new Date();
+                  const filename = `${hizuke.getFullYear()}${zeroume(
+                    hizuke.getMonth() + 1
+                  )}${zeroume(hizuke.getDate())}-${zeroume(
+                    hizuke.getHours()
+                  )}${zeroume(hizuke.getMinutes())}${zeroume(
+                    hizuke.getSeconds()
+                  )}`;
+                  const blob = new Blob([JSON.stringify(con)], {
+                    type: "application/json",
+                  });
+                  const url = (window.URL || window.webkitURL).createObjectURL(
+                    blob
+                  );
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = filename;
+                  a.click();
+                  a.remove();
+                }}
+              >
+                Light
+              </Button>
               </InputGroup>
             </div>
             <Graph1 ydata={con} hyou={hyou} />
