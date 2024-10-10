@@ -274,7 +274,7 @@ function App() {
                   a.remove();
                 }}
               >
-                Light
+                保存！！
               </Button>
               </InputGroup>
             </div>
