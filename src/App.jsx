@@ -12,7 +12,6 @@ import {
 import Graph1 from "./Graph1";
 //import { averageReferenceData, calculateDifferences } from "./utils"; // 角度計算や差異計算のユーティリティ関数
 
-
 const targetLandmarkIndex = [
   { index: 11, name: "hidarikata" },
   { index: 12, name: "migikata" },
@@ -27,7 +26,6 @@ const targetLandmarkIndex = [
   { index: 31, name: "hidaritumasaki" },
   { index: 32, name: "migitumasaki" },
 ];
-
 
 function App() {
   const webcam = useRef();
@@ -51,7 +49,6 @@ function App() {
   const frameCount = useRef(0); // フレーム数を追跡するための count
   const startButtonRef = useRef();
 
-
   // 100点データを読み込む
   useEffect(() => {
     [1, 2, 3, 4, 5].forEach((i) => {
@@ -70,14 +67,12 @@ function App() {
     });
   }, []); // 最初のロード時だけ実行
 
-
   useEffect(() => {
     if (!kaisi) return;
     setHituyou(referenceData.current[100][0].length);
     setHoji(con.length);
     //console.log(referenceData.current);
   }, [kaisi]);
-
 
   useEffect(() => {
     if (!kaisi || hituyou == 0 || hoji == 0) return;
@@ -86,10 +81,8 @@ function App() {
     if (con.length > hoji + hituyou) {
       setKaisi(false);
       const k = con.slice(hoji + 1, hoji + 1 + hituyou);
-      const { similarityScore, differences, sigmoid_scores } = calculateSimilarity(
-        k,
-        referenceData.current[100]
-      );
+      const { similarityScore, differences, sigmoid_scores } =
+        calculateSimilarity(k, referenceData.current[100]);
       setScoreComparison({ similarityScore, differences, sigmoid_scores });
     }
   }, [con]);
@@ -111,13 +104,11 @@ function App() {
     createPoseLandmarker();
   }, []); // 最初のロード時だけ実行
 
-
   // XXX : たぶんだけどこの計算だと類似度は出ないと思うよ。
   // そもそもcurrentDataと referenceData の形式が違うんじゃないかな？
   // 一回 console.log で出してみよう。
   //
   // 類似度計算関数
-
 
   function calculateSimilarity(currentData, referenceFrames) {
     //console.log("currentData", currentData);
@@ -133,7 +124,6 @@ function App() {
         let squaredDifferenceSum = 0;
         let numDimensions = 3; // x, y, z の3次元
 
-
         // x, y, z の差異を2乗して合計
         squaredDifferenceSum += Math.pow(
           currentData[i][a].x - referenceFrames[0][i][a].x,
@@ -148,13 +138,12 @@ function App() {
           2
         );
 
-
         // 平均を取る（ここでは次元数3で割る）
         const rmsd = Math.sqrt(squaredDifferenceSum / numDimensions);
         //console.log(`部位: ${a}, フレーム: ${i}, RMSD: ${rmsd}`);
         // 部位ごとのRMSEをdifferencesに追加
-        if(!differences[a] || rmsd <differences[a]){
-        differences[a] += rmsd;
+        if (!differences[a] || rmsd < differences[a]) {
+          differences[a] += rmsd;
         }
       });
     }
@@ -163,10 +152,11 @@ function App() {
     //const differences = calculateDifferences(averagedReferenceData, currentData);
     const sigmoid_scores = {};
     Object.entries(differences).map(([key, value]) => {
-      const sigmoid = (x) => 10 / (1 + Math.exp(1.5*x - 5));
+      const sigmoid = (x) => 10 / (1 + Math.exp(2.2 * x - 5));
       const score = Math.round(sigmoid(value));
       sigmoid_scores[key] = score;
       localScore += score;
+      console.log(`RMSD: ${value}, Sigmoidスコア: ${score}`);
     });
     // Object.values(differences).forEach((rmsd, i) => {
     //   const sigmoid = (x) => 10 / (1 + Math.exp(x - 5));
@@ -183,25 +173,18 @@ function App() {
 
     // const totalScore = Math.min(localScore, 10);
     console.log(`最終スコア: ${localScore}`);
-    
-
-
 
     setTotalScore(localScore);
     return { totalScore: totalScore, differences, sigmoid_scores };
   }
 
-
   const windowSize = 5;
   const pastCoordinates = targetLandmarkIndex.map(() => []);
 
-
   // ループ処理
-
 
   function loop() {
     if (!detectFlag) return; // detectFlagがfalseのときはループを停止
-
 
     ctxRef.current.clearRect(
       0,
@@ -222,7 +205,6 @@ function App() {
           canvasRef.current.height
         );
 
-
         if (result.landmarks && result.landmarks.length > 0) {
           const currentData = [];
           for (const landmarks of result.landmarks) {
@@ -238,13 +220,11 @@ function App() {
             });
             currentData.push(kokaku);
 
-
             // XXX : ↓の中括弧はここじゃない。もっと下に書く。
             // GitHubの(動いてるほうの)コードとよく見比べよう。
             // setCon も、類似度スコア更新も、フレーム数インクリメントも
             // この for 文の中になければならない。
             // ← これを消す
-
 
             // 現在のデータと前のデータが異なる場合のみ状態更新
             setCon((prevCon) => {
@@ -261,7 +241,6 @@ function App() {
             }
             frameCount.current++; // フレーム数をインクリメント
 
-
             // XXX : 以下のコードが足りない (元コードにはあったやろ...？)
             drawingUtils.current.drawLandmarks(landmarks, {
               radius: (data) =>
@@ -272,22 +251,18 @@ function App() {
               PoseLandmarker.POSE_CONNECTIONS
             );
 
-
             // XXX : 上で消した中括弧の正しい位置はここ。
           } // ← これをコメント外して有効にする
         }
       }
     );
 
-
     if (detectFlag) requestAnimationFrame(loop); // 次のフレームを呼び出し
   }
-
 
   function zeroume(z) {
     return ("0" + z).slice(-2);
   }
-
 
   // detectFlagが変わったときにループを開始
   useEffect(() => {
@@ -304,7 +279,6 @@ function App() {
     }
   }, [detectFlag, poseLandmarker]);
 
-
   const handleStartDetection = () => {
     if (cameraOK && settingOK) {
       setDetectFlag(true); // カメラが準備できたらdetectFlagをtrueに設定
@@ -313,22 +287,22 @@ function App() {
     }
   };
 
-/*const adviceData = {
-  hidarikata: "左肩のやる気がない！見直せ！！",
-  migikata: "右肩のやる気がない！見直せ！！",
-  hidarihiji: "左肘のやる気がない！見直せ！！",
-  migihiji: "右肩のやる気がない！見直せ！！",
-  hidaritekubi: "左手首のやる気がない！見直せ！！",
-  migitekubi: "右手首のやる気がない！見直せ！！",
-  hidarikosi: "左腰のやる気がない！見直せ！！",
-  migikosi: "右肩のやる気がない！見直せ！！",
-  hidarihiza: "左膝のやる気がない！見直せ！！",
-  migihiza: "右膝のやる気がない！見直せ！！",
-  hidaritumasaki: "左つま先のやる気がない！見直せ！！",
-  migitumasaki: "右つま先のやる気がない！見直せ！！",
-};*/
+  const adviceData = {
+    hidarikata: "左肩のやる気がない！見直せ！！",
+    migikata: "右肩のやる気がない！見直せ！！",
+    hidarihiji: "左肘のやる気がない！見直せ！！",
+    migihiji: "右肩のやる気がない！見直せ！！",
+    hidaritekubi: "左手首のやる気がない！見直せ！！",
+    migitekubi: "右手首のやる気がない！見直せ！！",
+    hidarikosi: "左腰のやる気がない！見直せ！！",
+    migikosi: "右肩のやる気がない！見直せ！！",
+    hidarihiza: "左膝のやる気がない！見直せ！！",
+    migihiza: "右膝のやる気がない！見直せ！！",
+    hidaritumasaki: "左つま先のやる気がない！見直せ！！",
+    migitumasaki: "右つま先のやる気がない！見直せ！！",
+  };
 
-const adviceData = {
+  /*const adviceData = {
   hidarikata: "左肩秀",
   migikata: "右肩秀",
   hidarihiji: "左肘秀",
@@ -341,8 +315,7 @@ const adviceData = {
   migihiza: "右膝秀",
   hidaritumasaki: "左つま先秀",
   migitumasaki: "右つま先秀",
-};
-
+};*/
 
   // 停止処理
   const handleStopDetection = () => {
@@ -350,7 +323,6 @@ const adviceData = {
     setCon([]); // グラフのデータをリセット
     setScoreComparison(null); // 類似度スコアをリセット
   };
-
 
   return (
     <div>
@@ -381,7 +353,6 @@ const adviceData = {
         </Button>
       </Container>
 
-
       <div className="App">
         {detectFlag && (
           <>
@@ -394,30 +365,30 @@ const adviceData = {
               シュート開始
             </Button>
             <Button
-              onClick={() =>{
-                const se1 = new Audio("./se/se1.mp3")
-                const se2 = new Audio("./se/se2.mp3")
+              onClick={() => {
+                const se1 = new Audio("./se/se1.mp3");
+                const se2 = new Audio("./se/se2.mp3");
                 setTimeout(() => {
-                  startButtonRef.current.click()
-                }, 10000)
+                  startButtonRef.current.click();
+                }, 10000);
                 setTimeout(() => {
-                  se2.play()
-                }, 9700)
+                  se2.play();
+                }, 9700);
                 setTimeout(() => {
-                  se1.pause()
-                  se1.currentTime = 0
-                  se1.play()
-                }, 8900)
+                  se1.pause();
+                  se1.currentTime = 0;
+                  se1.play();
+                }, 8900);
                 setTimeout(() => {
-                  se1.pause()
-                  se1.currentTime = 0
-                  se1.play()
-                }, 7900)
+                  se1.pause();
+                  se1.currentTime = 0;
+                  se1.play();
+                }, 7900);
                 setTimeout(() => {
-                  se1.pause()
-                  se1.currentTime = 0
-                  se1.play()
-                }, 6900)
+                  se1.pause();
+                  se1.currentTime = 0;
+                  se1.play();
+                }, 6900);
               }}
             >
               10秒後に開始
@@ -430,20 +401,30 @@ const adviceData = {
               <ul style={{ fontSize: "16px", color: "#000" }}>
                 {Object.entries(scoreComparison.differences).map(
                   ([part, diff]) => (
-                  
                     <li
                       key={part}
                       style={{
                         fontSize: "16px",
-                        color: scoreComparison.sigmoid_scores[part] < 5 ? "pink" : "yellowgreen",
+                        color:
+                          scoreComparison.sigmoid_scores[part] < 5
+                            ? "pink"
+                            : "yellowgreen",
                       }}
                     >
-                      {part}のシグモイドスコア: {scoreComparison.sigmoid_scores[part]?.toFixed(2) ?? "値なし"}
-                      {scoreComparison.sigmoid_scores[part] < 5 ? ` -> ${adviceData[part]}` : " -> 素晴らしい!"}
+                      {part}のシグモイドスコア:{" "}
+                      {scoreComparison.sigmoid_scores[part]?.toFixed(2) ??
+                        "値なし"}
+                      {scoreComparison.sigmoid_scores[part] < 5
+                        ? ` -> ${adviceData[part]}`
+                        : scoreComparison.sigmoid_scores[part] === 6
+                        ? " -> 良"
+                        : scoreComparison.sigmoid_scores[part] === 7
+                        ? " -> 優"
+                        : scoreComparison.sigmoid_scores[part] >= 8
+                        ? " -> 秀"
+                        : " -> 素晴らしい!"}
                     </li>
                   )
-
-
                 )}
               </ul>
             )}
@@ -550,8 +531,4 @@ const adviceData = {
   );
 }
 
-
 export default App;
-
-
-
