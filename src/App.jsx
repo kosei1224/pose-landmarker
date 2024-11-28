@@ -49,6 +49,7 @@ function App() {
   const [totalScore, setTotalScore] = useState(0);
   const countRef = useRef(0); // 読み込みカウンター用の useRef
   const frameCount = useRef(0); // フレーム数を追跡するための count
+  const startButtonRef = useRef();
 
 
   // 100点データを読み込む
@@ -85,11 +86,11 @@ function App() {
     if (con.length > hoji + hituyou) {
       setKaisi(false);
       const k = con.slice(hoji + 1, hoji + 1 + hituyou);
-      const { similarityScore, differences } = calculateSimilarity(
+      const { similarityScore, differences, sigmoid_scores } = calculateSimilarity(
         k,
         referenceData.current[100]
       );
-      setScoreComparison({ similarityScore, differences });
+      setScoreComparison({ similarityScore, differences, sigmoid_scores });
     }
   }, [con]);
   // PoseLandmarkerの初期化
@@ -119,8 +120,8 @@ function App() {
 
 
   function calculateSimilarity(currentData, referenceFrames) {
-    console.log("currentData", currentData);
-    console.log("referenceData", referenceFrames[0]);
+    //console.log("currentData", currentData);
+    //console.log("referenceData", referenceFrames[0]);
     const differences = {};
     let localScore = 0;
     Object.keys(currentData[0]).forEach((e) => {
@@ -157,19 +158,37 @@ function App() {
         }
       });
     }
-    console.log(differences);
+    //console.log(differences);
     //const averagedReferenceData = averageReferenceData(referenceFrames); // referenceFramesを平均化
     //const differences = calculateDifferences(averagedReferenceData, currentData);
-
-    Object.values(differences).forEach((rmsd) => {
-      if (rmsd < 10.0) {
-        localScore += 10; // 部位ごとにスコア加算
-      }
+    const sigmoid_scores = {};
+    Object.entries(differences).map(([key, value]) => {
+      const sigmoid = (x) => 10 / (1 + Math.exp(1.5*x - 5));
+      const score = Math.round(sigmoid(value));
+      sigmoid_scores[key] = score;
+      localScore += score;
     });
+    // Object.values(differences).forEach((rmsd, i) => {
+    //   const sigmoid = (x) => 10 / (1 + Math.exp(x - 5));
+    //   // const sigmoid = 1/(1+Math.exp(rmsd-5));
+    //   let score = sigmoid(rmsd);
+
+    //   score = Math.round(score);
+    //   // new_scores.differences[i][1].sigmoid = score;
+
+    //   localScore += score;
+    //   console.log(`RMSD: ${rmsd}, Sigmoidスコア: ${score}`);
+    //   console.log(sigmoid);
+    // });
+
+    // const totalScore = Math.min(localScore, 10);
+    console.log(`最終スコア: ${localScore}`);
+    
+
 
 
     setTotalScore(localScore);
-    return { totalScore: totalScore, differences };
+    return { totalScore: totalScore, differences, sigmoid_scores };
   }
 
 
@@ -294,7 +313,7 @@ function App() {
     }
   };
 
-const adviceData = {
+/*const adviceData = {
   hidarikata: "左肩のやる気がない！見直せ！！",
   migikata: "右肩のやる気がない！見直せ！！",
   hidarihiji: "左肘のやる気がない！見直せ！！",
@@ -307,6 +326,21 @@ const adviceData = {
   migihiza: "右膝のやる気がない！見直せ！！",
   hidaritumasaki: "左つま先のやる気がない！見直せ！！",
   migitumasaki: "右つま先のやる気がない！見直せ！！",
+};*/
+
+const adviceData = {
+  hidarikata: "左肩秀",
+  migikata: "右肩秀",
+  hidarihiji: "左肘秀",
+  migihiji: "右肩秀",
+  hidaritekubi: "左手首秀",
+  migitekubi: "右手首秀",
+  hidarikosi: "左腰秀",
+  migikosi: "右肩秀",
+  hidarihiza: "左膝秀",
+  migihiza: "右膝秀",
+  hidaritumasaki: "左つま先秀",
+  migitumasaki: "右つま先秀",
 };
 
 
@@ -352,11 +386,41 @@ const adviceData = {
         {detectFlag && (
           <>
             <Button
+              ref={startButtonRef}
               onClick={() => {
                 setKaisi(true);
               }}
             >
               シュート開始
+            </Button>
+            <Button
+              onClick={() =>{
+                const se1 = new Audio("./se/se1.mp3")
+                const se2 = new Audio("./se/se2.mp3")
+                setTimeout(() => {
+                  startButtonRef.current.click()
+                }, 10000)
+                setTimeout(() => {
+                  se2.play()
+                }, 9700)
+                setTimeout(() => {
+                  se1.pause()
+                  se1.currentTime = 0
+                  se1.play()
+                }, 8900)
+                setTimeout(() => {
+                  se1.pause()
+                  se1.currentTime = 0
+                  se1.play()
+                }, 7900)
+                setTimeout(() => {
+                  se1.pause()
+                  se1.currentTime = 0
+                  se1.play()
+                }, 6900)
+              }}
+            >
+              10秒後に開始
             </Button>
             <h2 style={{ fontSize: "24px", color: "#FFFFFF" }}>
               シュート評価点数: {totalScore}/120点
@@ -366,15 +430,16 @@ const adviceData = {
               <ul style={{ fontSize: "16px", color: "#000" }}>
                 {Object.entries(scoreComparison.differences).map(
                   ([part, diff]) => (
+                  
                     <li
                       key={part}
                       style={{
                         fontSize: "16px",
-                        color: diff > 10 ? "pink" : "yellowgreen",
+                        color: scoreComparison.sigmoid_scores[part] < 5 ? "pink" : "yellowgreen",
                       }}
                     >
-                      {part}の差異: {diff.toFixed(2)}
-                      {diff > 10 ? ` -> ${adviceData[part]}` : " -> 素晴らしい!"}
+                      {part}のシグモイドスコア: {scoreComparison.sigmoid_scores[part]?.toFixed(2) ?? "値なし"}
+                      {scoreComparison.sigmoid_scores[part] < 5 ? ` -> ${adviceData[part]}` : " -> 素晴らしい!"}
                     </li>
                   )
 
