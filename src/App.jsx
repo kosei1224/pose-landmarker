@@ -27,6 +27,21 @@ const targetLandmarkIndex = [
   { index: 32, name: "migitumasaki" },
 ];
 
+const weight = {
+  hidarikata: 5,
+  migikata: 5,
+  hidarihiji: 5,
+  migihiji: 4,
+  hidaritekubi: 2,
+  migitekubi: 2,
+  hidarikosi: 5,
+  migikosi: 5,
+  hidarihiza: 5,
+  migihiza: 2,
+  hidaritumasaki: 2,
+  migitumasaki: 2,
+};
+
 function App() {
   const webcam = useRef();
   const [detectFlag, setDetectFlag] = useState(false);
@@ -69,7 +84,7 @@ function App() {
 
   useEffect(() => {
     if (!kaisi) return;
-    setHituyou(referenceData.current[100][0].length);
+    setHituyou(referenceData.current[100][2].length);
     setHoji(con.length);
     //console.log(referenceData.current);
   }, [kaisi]);
@@ -126,15 +141,15 @@ function App() {
 
         // x, y, z の差異を2乗して合計
         squaredDifferenceSum += Math.pow(
-          currentData[i][a].x - referenceFrames[0][i][a].x,
+          currentData[i][a].x - referenceFrames[2][i][a].x,
           2
         );
         squaredDifferenceSum += Math.pow(
-          currentData[i][a].y - referenceFrames[0][i][a].y,
+          currentData[i][a].y - referenceFrames[2][i][a].y,
           2
         );
         squaredDifferenceSum += Math.pow(
-          currentData[i][a].z - referenceFrames[0][i][a].z,
+          currentData[i][a].z - referenceFrames[2][i][a].z,
           2
         );
 
@@ -152,8 +167,10 @@ function App() {
     //const differences = calculateDifferences(averagedReferenceData, currentData);
     const sigmoid_scores = {};
     Object.entries(differences).map(([key, value]) => {
-      const sigmoid = (x) => 10 / (1 + Math.exp(2.2 * x - 5));
-      const score = Math.round(sigmoid(value));
+      const a = weight[key];
+      console.log(a);
+      const sigmoid = (x, a) => 10 / (1 + Math.exp(a * x - 5));
+      const score = Math.round(sigmoid(value, a));
       sigmoid_scores[key] = score;
       localScore += score;
       console.log(`RMSD: ${value}, Sigmoidスコア: ${score}`);
