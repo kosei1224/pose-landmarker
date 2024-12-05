@@ -431,15 +431,13 @@ function App() {
                       {part}のシグモイドスコア:{" "}
                       {scoreComparison.sigmoid_scores[part]?.toFixed(2) ??
                         "値なし"}
-                      {scoreComparison.sigmoid_scores[part] < 5
-                        ? ` -> ${adviceData[part]}`
-                        : scoreComparison.sigmoid_scores[part] === 6
-                        ? " -> 良"
+                      {scoreComparison.sigmoid_scores[part] >= 8
+                        ? " -> 秀"
                         : scoreComparison.sigmoid_scores[part] === 7
                         ? " -> 優"
-                        : scoreComparison.sigmoid_scores[part] >= 8
-                        ? " -> 秀"
-                        : " -> 素晴らしい!"}
+                        : scoreComparison.sigmoid_scores[part] === 6
+                        ? " -> 良"
+                        : ` -> ${adviceData[part]}`}
                     </li>
                   )
                 )}
