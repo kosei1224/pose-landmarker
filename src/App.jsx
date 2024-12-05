@@ -28,18 +28,18 @@ const targetLandmarkIndex = [
 ];
 
 const weight = {
-  hidarikata: 5,
-  migikata: 5,
-  hidarihiji: 5,
-  migihiji: 4,
-  hidaritekubi: 2,
-  migitekubi: 2,
-  hidarikosi: 5,
-  migikosi: 5,
-  hidarihiza: 5,
-  migihiza: 2,
-  hidaritumasaki: 2,
-  migitumasaki: 2,
+  hidarikata: 1,
+  migikata: 1,
+  hidarihiji: 0.5,
+  migihiji: 0.5,
+  hidaritekubi: 0.5,
+  migitekubi: 0.5,
+  hidarikosi: 0.5,
+  migikosi: 0.5,
+  hidarihiza: 0.5,
+  migihiza: 0.5,
+  hidaritumasaki: 0.5,
+  migitumasaki: 0.5,
 };
 
 function App() {
@@ -84,9 +84,9 @@ function App() {
 
   useEffect(() => {
     if (!kaisi) return;
-    setHituyou(referenceData.current[100][2].length);
+    setHituyou(referenceData.current[100][4].length);
     setHoji(con.length);
-    //console.log(referenceData.current);
+    console.log(referenceData.current);
   }, [kaisi]);
 
   useEffect(() => {
@@ -141,15 +141,15 @@ function App() {
 
         // x, y, z の差異を2乗して合計
         squaredDifferenceSum += Math.pow(
-          currentData[i][a].x - referenceFrames[2][i][a].x,
+          currentData[i][a].x - referenceFrames[4][i][a].x,
           2
         );
         squaredDifferenceSum += Math.pow(
-          currentData[i][a].y - referenceFrames[2][i][a].y,
+          currentData[i][a].y - referenceFrames[4][i][a].y,
           2
         );
         squaredDifferenceSum += Math.pow(
-          currentData[i][a].z - referenceFrames[2][i][a].z,
+          currentData[i][a].z - referenceFrames[4][i][a].z,
           2
         );
 
@@ -387,25 +387,25 @@ function App() {
                 const se2 = new Audio("./se/se2.mp3");
                 setTimeout(() => {
                   startButtonRef.current.click();
-                }, 10000);
+                }, 7000);
                 setTimeout(() => {
                   se2.play();
-                }, 9700);
+                }, 6700);
                 setTimeout(() => {
                   se1.pause();
                   se1.currentTime = 0;
                   se1.play();
-                }, 8900);
+                }, 5900);
                 setTimeout(() => {
                   se1.pause();
                   se1.currentTime = 0;
                   se1.play();
-                }, 7900);
+                }, 4900);
                 setTimeout(() => {
                   se1.pause();
                   se1.currentTime = 0;
                   se1.play();
-                }, 6900);
+                }, 3900);
               }}
             >
               10秒後に開始
