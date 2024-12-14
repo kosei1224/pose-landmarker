@@ -352,7 +352,8 @@ function App() {
           audio={false}
           ref={webcam}
           videoConstraints={{
-            facingMode: "environment",
+            //facingMode: "environment",
+            facingMode: "user",
           }}
           onUserMedia={() => {
             console.log("カメラが準備完了");
