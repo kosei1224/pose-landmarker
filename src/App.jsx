@@ -28,10 +28,10 @@ const targetLandmarkIndex = [
 ];
 
 const weight = {
-  hidarikata: 1,
-  migikata: 1,
-  hidarihiji: 0.5,
-  migihiji: 0.5,
+  hidarikata: 0.5,
+  migikata: 0.5,
+  hidarihiji: 0.4,
+  migihiji: 0.4,
   hidaritekubi: 0.3,
   migitekubi: 0.3,
   hidarikosi: 0.5,
@@ -308,11 +308,11 @@ function App() {
     hidarikata: "左肩のやる気がない！見直せ！！",
     migikata: "右肩のやる気がない！見直せ！！",
     hidarihiji: "左肘のやる気がない！見直せ！！",
-    migihiji: "右肩のやる気がない！見直せ！！",
+    migihiji: "右肘のやる気がない！見直せ！！",
     hidaritekubi: "左手首のやる気がない！見直せ！！",
     migitekubi: "右手首のやる気がない！見直せ！！",
     hidarikosi: "左腰のやる気がない！見直せ！！",
-    migikosi: "右肩のやる気がない！見直せ！！",
+    migikosi: "右腰のやる気がない！見直せ！！",
     hidarihiza: "左膝のやる気がない！見直せ！！",
     migihiza: "右膝のやる気がない！見直せ！！",
     hidaritumasaki: "左つま先のやる気がない！見直せ！！",
@@ -334,11 +334,29 @@ function App() {
   migitumasaki: "右つま先秀",
 };*/
 
-  // 停止処理
   const handleStopDetection = () => {
-    setDetectFlag(false); // 姿勢検出を停止
-    setCon([]); // グラフのデータをリセット
-    setScoreComparison(null); // 類似度スコアをリセット
+    // 1. 検出を止める
+    setDetectFlag(false);
+
+    // 2. 各種ステートを初期化
+    setCon([]);
+    setScoreComparison(null);
+    setTotalScore(0);
+    setKaisi(false);
+
+    // 3. Ref のカウンタ等もリセット
+    frameCount.current = 0;
+    countRef.current = 0;
+
+    // 4. Canvas をクリア（描画を消す）
+    if (canvasRef.current && ctxRef.current) {
+      ctxRef.current.clearRect(
+        0,
+        0,
+        canvasRef.current.width,
+        canvasRef.current.height
+      );
+    }
   };
 
   return (
@@ -352,8 +370,8 @@ function App() {
           audio={false}
           ref={webcam}
           videoConstraints={{
-            //facingMode: "environment",
-            facingMode: "user",
+            facingMode: "environment",
+            //facingMode: "user",
           }}
           onUserMedia={() => {
             console.log("カメラが準備完了");
@@ -424,7 +442,7 @@ function App() {
                       style={{
                         fontSize: "16px",
                         color:
-                          scoreComparison.sigmoid_scores[part] < 5
+                          scoreComparison.sigmoid_scores[part] <= 5
                             ? "pink"
                             : "yellowgreen",
                       }}
