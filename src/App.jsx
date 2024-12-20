@@ -28,16 +28,16 @@ const targetLandmarkIndex = [
 ];
 
 const weight = {
-  hidarikata: 0.5,
-  migikata: 0.5,
+  hidarikata: 1,
+  migikata: 1,
   hidarihiji: 0.4,
   migihiji: 0.4,
-  hidaritekubi: 0.3,
-  migitekubi: 0.3,
-  hidarikosi: 0.5,
-  migikosi: 0.5,
-  hidarihiza: 0.5,
-  migihiza: 0.5,
+  hidaritekubi: 0.2,
+  migitekubi: 0.4,
+  hidarikosi: 1,
+  migikosi: 1,
+  hidarihiza: 1,
+  migihiza: 1,
   hidaritumasaki: 0.5,
   migitumasaki: 0.5,
 };
