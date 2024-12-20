@@ -1,2 +1,17 @@
 @import 'bootstrap/scss/bootstrap';
 
+.position-relative {
+  position: relative;
+}
+
+.canvas-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0; /* Canvasを背面に */
+}
+
+.controls-container {
+  position: relative;
+  z-index: 1; /* ボタン等をCanvasより前面へ */
+}

@@ -201,7 +201,10 @@ function App() {
   // ループ処理
 
   function loop() {
-    if (!detectFlag) return; // detectFlagがfalseのときはループを停止
+    if (!detectFlag || !ctxRef.current) return; // detectFlagがfalseのときはループを停止
+
+    console.log("cameraOK:", cameraOK);
+    console.log("settingOK:", settingOK);
 
     ctxRef.current.clearRect(
       0,
@@ -288,10 +291,12 @@ function App() {
       poseLandmarker.current &&
       webcam.current.video.readyState === 4
     ) {
-      canvasRef.current.width = webcam.current.video.clientWidth;
-      canvasRef.current.height = webcam.current.video.clientHeight;
-      ctxRef.current = canvasRef.current.getContext("2d");
-      drawingUtils.current = new DrawingUtils(ctxRef.current);
+      if (canvasRef.current) {
+        canvasRef.current.width = webcam.current.video.clientWidth;
+        canvasRef.current.height = webcam.current.video.clientHeight;
+        ctxRef.current = canvasRef.current.getContext("2d");
+        drawingUtils.current = new DrawingUtils(ctxRef.current);
+      }
       loop();
     }
   }, [detectFlag, poseLandmarker]);
@@ -334,31 +339,6 @@ function App() {
   migitumasaki: "右つま先秀",
 };*/
 
-  const handleStopDetection = () => {
-    // 1. 検出を止める
-    setDetectFlag(false);
-
-    // 2. 各種ステートを初期化
-    setCon([]);
-    setScoreComparison(null);
-    setTotalScore(0);
-    setKaisi(false);
-
-    // 3. Ref のカウンタ等もリセット
-    frameCount.current = 0;
-    countRef.current = 0;
-
-    // 4. Canvas をクリア（描画を消す）
-    if (canvasRef.current && ctxRef.current) {
-      ctxRef.current.clearRect(
-        0,
-        0,
-        canvasRef.current.width,
-        canvasRef.current.height
-      );
-    }
-  };
-
   return (
     <div>
       <div className="position-relative">
@@ -378,9 +358,9 @@ function App() {
             setCameraOK(true);
           }}
         />
-        <canvas className="position-absolute top-0 start-0" ref={canvasRef} />
+        <canvas className="canvas-overlay" ref={canvasRef} />
       </div>
-      <Container fluid hidden={detectFlag}>
+      <Container fluid hidden={detectFlag} className="controls-container">
         <Button
           onClick={handleStartDetection}
           disabled={!(cameraOK && settingOK)}
@@ -555,9 +535,6 @@ function App() {
               </InputGroup>
             </div>
             <Graph1 ydata={con} hyou={hyou} />
-            <Button onClick={handleStopDetection} variant="danger">
-              姿勢検出終了
-            </Button>
           </>
         )}
       </div>
